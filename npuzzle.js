@@ -3,7 +3,7 @@
 function NPuzzle(n_) {
 
 	this.n = n_;
-	this.winState = [];
+	this.winGrid = [];
 
 	this.rows = 1;
 	this.cols = 1;
@@ -37,9 +37,9 @@ function NPuzzle(n_) {
 
 		var num = 0;
 		for (var r = 0; r < this.rows; r++) {
-			this.winState.push([]);
+			this.winGrid.push([]);
 			for (var c = 0; c < this.cols; c++) {
-				this.winState[r].push(num);
+				this.winGrid[r].push(num);
 				num++;
 			}
 		}
@@ -47,19 +47,34 @@ function NPuzzle(n_) {
 
 	this.constructWinState();
 
+	// check a state against the win state
+	this.checkForWinState = function(currentState) {
+		g = currentState.grid;
+
+		for (var r = 0; r < this.rows; r++) {
+			for (var c = 0; c < this.cols; c++) {
+				if (g[r][c] != this.winGrid[r][c]) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	// generate a random solvable initial state
 	this.getRandomState = function() {
 		// initialize at win state to guarantee solution
-		var state = new State(undefined, 0, 0);
-		state.grid = gridCopy(this.winState);
+		var state = new State(undefined, 0, 0, this.winGrid);
+		state.grid = gridCopy(this.winGrid);
 
-		for (var i = 0; i < 1; i++) {
+		// make arbitrary number of random moves
+		for (var i = 0; i < 100; i++) {
 			var moves = state.getAllPossibleTransitions();
 			state = moves[Math.floor(Math.random() * moves.length)];
 		}
 
 		return state;
-
-
 	}
 
 	// search init state for solution using iterative deepening a*

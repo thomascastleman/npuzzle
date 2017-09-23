@@ -3,8 +3,6 @@ var p;
 
 function main() {
 	p = new NPuzzle(8);
-
-
 }
 
 main();
