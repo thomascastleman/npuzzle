@@ -17,12 +17,20 @@ function NPuzzle(n_) {
 			var factors = primeFactor(this.n + 1);
 			var mid = Math.floor(factors.length / 2);
 
-			for (var i = 0; i < factors.length; i++) {
-				if (i <= mid) {
-					this.rows *= factors[i];
-				} else {
-					this.cols *= factors[i];
+			if (factors.length > 2) {
+				for (var i = 0; i < factors.length; i++) {
+					if (i <= mid) {
+						this.rows *= factors[i];
+					} else {
+						this.cols *= factors[i];
+					}
 				}
+			} else if (factors.length == 2) {
+				this.rows = factors[0];
+				this.cols = factors[1];
+			} else {
+				this.rows = 1;
+				this.cols = factors[0];
 			}
 		}
 
@@ -40,10 +48,22 @@ function NPuzzle(n_) {
 	this.constructWinState();
 
 	this.getRandomState = function() {
+		// initialize at win state to guarantee solution
+		var state = new State(undefined, 0, 0);
+		state.grid = gridCopy(this.winState);
+
+		for (var i = 0; i < 1; i++) {
+			var moves = state.getAllPossibleTransitions();
+			state = moves[Math.floor(Math.random() * moves.length)];
+		}
+
+		return state;
+
 
 	}
 
-	this.aStar = function(init) {
+	// search init state for solution using iterative deepening a*
+	this.id_astar = function(init) {
 
 	}
 }

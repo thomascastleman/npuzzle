@@ -7,6 +7,8 @@ function main() {
 
 }
 
+main();
+
 function gridCopy(grid) {
 	var copy = [];
 	for (var row = 0; row < grid.length; row++) {
