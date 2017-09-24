@@ -55,8 +55,8 @@ function State(prevState, voidRow, voidCol, win_) {
 		return Math.abs(solvedR - r) + Math.abs(solvedC - c);
 	}
 
-	this.calcGCost = function(parent) {
-		this.gCost = parent.gCost + 1;
+	this.calcGCost = function() {
+		this.gCost = this.parent.gCost + 1;
 	}
 
 	this.calcFCost = function() {
@@ -86,6 +86,5 @@ function State(prevState, voidRow, voidCol, win_) {
 		}
 
 		return possible;
-
 	}
 }

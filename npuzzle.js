@@ -3,10 +3,50 @@
 function NPuzzle(n_) {
 
 	this.n = n_;
-	this.winGrid = [];
+
+	this.winGrid = [];		// winning grid
+	this.winState;			// state object with winning grid
 
 	this.rows = 1;
 	this.cols = 1;
+
+	// check a state against the win state
+	this.checkStateEquality = function(stateA, stateB) {
+		gA = stateA.grid;
+		gB = stateB.grid;
+
+		for (var r = 0; r < this.rows; r++) {
+			for (var c = 0; c < this.cols; c++) {
+				if (gA[r][c] != gB[r][c]) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	// check if array contains a given state
+	this.checkInclusion = function(stateArray, state) {
+		for (var i = 0; i < stateArray.length; i++) {
+			if (this.checkStateEquality(stateArray[i], state)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	// get the index of a state in a given array
+	this.getIndexOfState = function(stateArray, state) {
+		for (var i = 0; i < stateArray.length; i++) {
+			if (this.checkStateEquality(stateArray[i], state)) {
+				return i;
+			}
+		}
+
+		return undefined;
+	}
 
 	this.constructWinState = function() {
 		// if n + 1 perfect square
@@ -43,24 +83,12 @@ function NPuzzle(n_) {
 				num++;
 			}
 		}
+
+		this.winState = new State(undefined, 0, 0, this.winGrid);
+		this.winState.grid = gridCopy(this.winGrid);
 	}
 
 	this.constructWinState();
-
-	// check a state against the win state
-	this.checkForWinState = function(currentState) {
-		g = currentState.grid;
-
-		for (var r = 0; r < this.rows; r++) {
-			for (var c = 0; c < this.cols; c++) {
-				if (g[r][c] != this.winGrid[r][c]) {
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
 
 	// generate a random solvable initial state
 	this.getRandomState = function() {
@@ -77,8 +105,105 @@ function NPuzzle(n_) {
 		return state;
 	}
 
+	this.getLowestFCost = function(states) {
+		var min = states[0].fCost;
+		var minArray = [];
+
+		// get lowest f cost
+		for (var i = 0; i < states.length; i++) {
+			if (states[i].fCost < min) {
+				min = states[i].fCost;
+				minArray = [];
+			}
+
+			if (states[i].fCost == min) {
+				minArray.push(states[i]);
+			}
+		}
+
+		if (minArray.length > 1) {
+			// if multiple options, take lowest h cost
+			var minH = minArray[0];
+
+			for (var i = 0; i < minArray.length; i++) {
+				if (minArray[i].hCost < minH.hCost) {
+					minH = minArray[i];
+				}
+			}
+
+			return minH;
+		} else {
+			return minArray[0];
+		}
+	}
+
+	// search init state for solution using a*
+	this.astar = function(init) {
+		var closedSet = [];			// nodes already expanded
+		var openSet = [];			// nodes on frontier available to be expanded
+
+		var lowestCost;
+
+		// set up initial values
+		init.calcHCost();
+		init.gCost = 0;
+		init.calcFCost();
+
+		// add initial state to open set
+		openSet.push(init);
+
+		while (true) {
+			if (openSet.length == 0) {
+				break;
+			} else {
+				lowestCost = this.getLowestFCost(openSet);
+
+				openSet.splice(this.getIndexOfState(openSet, lowestCost), 1);		// remove from open set
+				closedSet.push(lowestCost);											// add to closed set
+
+				// if solution found, terminate
+				if (this.checkStateEquality(lowestCost, this.winState)) {
+					break;
+				}
+
+				// get all possible moves
+				var children = lowestCost.getAllPossibleTransitions();
+
+				for (var i = 0; i < children.length; i++) {
+					// if child not in closed set
+					if (!this.checkInclusion(closedSet, children[i])) {
+						// calculate all costs
+						children[i].calcGCost();
+						children[i].calcHCost();
+						children[i].calcFCost();
+
+						// if not already in open set, add
+						if (!this.checkInclusion(openSet, children[i])) {
+							openSet.push(children[i]);
+						}
+					}
+				}
+			}
+		}
+
+		if (openSet.length != 0) {
+			var path = [];
+
+			var state = lowestCost;
+
+			while (!this.checkStateEquality(state, init)) {
+				path.push(state);
+				state = state.parent;
+			}
+			path.push(init);
+
+			return path;
+		} else {
+			return undefined;
+		}
+	}
+
 	// search init state for solution using iterative deepening a*
 	this.id_astar = function(init) {
-
 	}
 }

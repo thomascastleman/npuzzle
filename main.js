@@ -1,8 +1,14 @@
 
 var p;
+var initial;
 
 function main() {
 	p = new NPuzzle(8);
+	initial = p.getRandomState();
+	console.log("initial");
+	console.log(initial);
+
+	console.log(p.astar(initial));
 }
 
 main();
