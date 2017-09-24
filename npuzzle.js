@@ -74,7 +74,6 @@ function NPuzzle(n_) {
 			}
 		}
 
-
 		var num = 0;
 		for (var r = 0; r < this.rows; r++) {
 			this.winGrid.push([]);
@@ -84,7 +83,7 @@ function NPuzzle(n_) {
 			}
 		}
 
-		this.winState = new State(undefined, 0, 0, this.winGrid);
+		this.winState = new State(undefined, 0, 0, this.winGrid, "");
 		this.winState.grid = gridCopy(this.winGrid);
 	}
 
@@ -93,7 +92,7 @@ function NPuzzle(n_) {
 	// generate a random solvable initial state
 	this.getRandomState = function() {
 		// initialize at win state to guarantee solution
-		var state = new State(undefined, 0, 0, this.winGrid);
+		var state = new State(undefined, 0, 0, this.winGrid, "");
 		state.grid = gridCopy(this.winGrid);
 
 		// make arbitrary number of random moves

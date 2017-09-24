@@ -1,6 +1,6 @@
 
 
-function State(prevState, voidRow, voidCol, win_) {
+function State(prevState, voidRow, voidCol, win_, fromParent) {
 
 	this.parent = prevState;
 	this.grid;
@@ -9,6 +9,9 @@ function State(prevState, voidRow, voidCol, win_) {
 	this.gCost;
 	this.hCost;
 	this.fCost;
+
+	// 'U', 'D', 'L', 'R'
+	this.moveFromParent = fromParent;
 
 	this.win = gridCopy(win_);	// copy of win state grid for this n-puzzle
 
@@ -74,14 +77,14 @@ function State(prevState, voidRow, voidCol, win_) {
 		// up and down moves
 		for (var r = vR - 1; r <= vR + 1; r++) {
 			if (this.grid[r] != undefined && r != vR) {
-				possible.push(new State(this, r, vC, this.win));
+				possible.push(new State(this, r, vC, this.win, (r < vR ? "U" : "D")));
 			}
 		}
 
 		// left and right moves
 		for (var c = vC - 1; c <= vC + 1; c++) {
 			if (this.grid[vR][c] != undefined && c != vC) {
-				possible.push(new State(this, vR, c, this.win));
+				possible.push(new State(this, vR, c, this.win, (c < vC ? "L" : "R")));
 			}
 		}
 

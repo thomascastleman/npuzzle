@@ -1,14 +1,24 @@
 
 var p;
 var initial;
+var path;
 
 function main() {
 	p = new NPuzzle(8);
 	initial = p.getRandomState();
-	console.log("initial");
-	console.log(initial);
 
-	console.log(p.astar(initial));
+	path = p.astar(initial);
+
+	for (var i = path.length - 1; i >= 0; i--) {
+		console.log(path[i].moveFromParent);
+		logGrid(path[i].grid);
+	}
+}
+
+function logGrid(grid) {
+	for (var i = 0; i < grid.length; i++) {
+		console.log(grid[i]);
+	}
 }
 
 main();
