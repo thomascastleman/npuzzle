@@ -203,6 +203,78 @@ function NPuzzle(n_) {
 	}
 
 	// search init state for solution using iterative deepening a*
+	this.threshold;
+	this.currentMinCost;
 	this.id_astar = function(init) {
+
+		init.calcHCost();
+		init.gCost = 1;
+		this.threshold = init.hCost;
+
+		this.currentMinCost = Number.POSITIVE_INFINITY;
+
+		var goalState;
+
+		while (true) {
+
+			goalState = this.iddfs(init);
+
+			console.log("Threshold == " + this.threshold);
+			console.log("Min cost outside: " + this.currentMinCost);
+
+			if (goalState != undefined) {
+				break;
+			} else {
+
+				this.threshold = this.currentMinCost;
+				this.currentMinCost = Number.POSITIVE_INFINITY;
+
+			}
+		}
+
+		if (goalState != undefined) {
+			// reconstruct path
+			var path = [];
+
+			var state = goalState;
+			while (!this.checkStateEquality(state, init)) {
+				path.push(state);
+				state = state.parent;
+			}
+			path.push(init);
+
+			return path;
+		} else {
+			return undefined;
+		}
+
+	}
+
+	// iterative deepening depth first search
+	this.iddfs = function(state) {
+		if (this.checkStateEquality(state, this.winState)) {
+			return state;
+		} else {
+			var children = state.getAllPossibleTransitions();
+			for (var i = 0; i < children.length; i++) {
+				children[i].calcHCost();
+				children[i].calcGCost();
+				children[i].calcFCost();
+
+				if (children[i].fCost <= this.threshold) {
+					var search = this.iddfs(children[i]);
+
+					if (search != undefined) {
+						return search;
+					}
+				} else {
+					if (children[i].fCost < this.currentMinCost) {
+						this.currentMinCost = children[i].fCost;
+					}
+				}
+			}
+
+			return undefined;
+		}
 	}
 }

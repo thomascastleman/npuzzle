@@ -4,15 +4,15 @@ var initial;
 var path;
 
 function main() {
-	p = new NPuzzle(8);
+	p = new NPuzzle(9);
 	initial = p.getRandomState();
 
-	path = p.astar(initial);
+	// path = p.id_astar(initial);
 
-	for (var i = path.length - 1; i >= 0; i--) {
-		console.log(path[i].moveFromParent);
-		logGrid(path[i].grid);
-	}
+	// for (var i = path.length - 1; i >= 0; i--) {
+	// 	console.log(path[i].moveFromParent);
+	// 	logGrid(path[i].grid);
+	// }
 }
 
 function logGrid(grid) {
